@@ -206,3 +206,38 @@ where:
 - `k` = number of events
 
 The Poisson distribution is often used to model the number of occurrences of an event within a fixed interval of time or space when these events happen with a known constant mean rate and independently of the time since the last event.
+
+
+# Continuous Random Variables
+
+Continuous random variables can take on any value within a given range or interval. Unlike discrete variables, which have distinct and separate values, continuous variables can take on an infinite number of possible values. 
+
+## Uniform Distribution
+
+A continuous random variable is uniformly distributed if all values within a specified range are equally likely. The probability density function (PDF) of a uniform distribution is:
+
+f(x) = 1 / (b - a) for a ≤ x ≤ b
+
+
+
+where:
+- `a` = lower bound of the interval
+- `b` = upper bound of the interval
+
+The uniform distribution is used when each outcome in the interval is equally likely.
+
+## Exponential Distribution
+
+The exponential distribution models the time between events in a Poisson process, where events occur continuously and independently at a constant average rate. The probability density function (PDF) of an exponential distribution is:
+
+
+f(x) = λ * e^(-λx) for x ≥ 0
+
+
+
+where:
+- `λ` = rate parameter (average rate of occurrence)
+- `x` = time between events
+
+The exponential distribution is useful for modeling the time until an event occurs, such as the time between arrivals of customers at a service station.
+
