@@ -74,10 +74,43 @@ The cumulative distribution function, or more simply the distribution function, 
 F(x) = P{X ≤ x}
 
 
-## Discrete Random Variables
+### Discrete Random Variables
 
 A random variable that can take either a finite or at most a countable number of possible values is said to be **discrete**. For a discrete random variable `X`, we define its **probability mass function** `p(x)` by:
 
 p(x) = P{X = x}
 
+
+
+### Expectation
+
+One of the most useful concepts in probability is that of the expectation of a
+random variable. If X is a discrete random variable that takes on one of the possible values Xl, X2, ..., then the expectation or expected value of X, also
+called the mean of X and denoted by E[X], is defined by
+
+[](img/1.png)
+
+In words, the expected value of X is a weighted average of the possible values
+that X can take on, each value being weighted by the probability that X assumes
+it. For example, if the probability mass function of X is given by
+
+
+p(0) = 1/2 = p(1)
+
+then 
+
+E[X] = 0 (1/2) + 1(1/2) = 1/2
+
+is just the ordinary average ofthe two possible values 0 and I that X can assume.
+On the other hand, if
+
+p(0)=1/3,  p(1)=2/3
+
+
+then
+
+E[X] = 0 (1/3) + 1 (2/3) = 2/3
+
+s a weighted average of the two possible values 0 and I where the value 1 is
+given twice as much weight as the value 0 since p(1) = 2p(O).
 
