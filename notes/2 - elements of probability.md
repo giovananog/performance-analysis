@@ -114,3 +114,79 @@ E[X] = 0 (1/3) + 1 (2/3) = 2/3
 s a weighted average of the two possible values 0 and I where the value 1 is
 given twice as much weight as the value 0 since p(1) = 2p(O).
 
+
+
+
+### Variance
+
+Whereas E[X], the expected value of the random variable X, is a weighted
+average of the possible values of X, it yields no information about the variation
+of these values. One way of measuring this variation is to consider the average
+value of the square of the difference between X and E[X]. We are thus led to
+the following definition
+
+Definition .If X is a random variable with mean u, then the variance of X,
+denoted by Var(X), is defined by
+
+Var(X) = E[(X - u)^2]
+
+Var(X) = E[X^2] - (E[X])^2
+
+
+
+
+### Some Discrete Random Variables
+
+
+#### Bernoulli
+
+An experiment with 2 possible outcomes is characterized by the Bernoulli random variable. 
+With 1 representing the value of the variable when a "success" occurs and 0 representing the value of the variable when a "failure" occurs:
+- P[X=1] = p
+- P[X=0] = q
+- p + q = 1
+
+The expected value of a Bernoulli variable is simply p:
+- E[X] = 1 * p + 0 * q
+- E[X] = p
+
+**Variance:**
+
+Var[X] = E[X^2] - E[X]^2
+       = 1^2 * p + 0^2 * q - E[X]^2
+       = p - p^2
+       = p(1 - p)
+       = p * q
+
+#### Binomial Random Variables
+
+In `n` trials, we need exactly `k` successes and `n - k` failures. Therefore, the probability mass function (pmf) is given by:
+
+P(X = k) = C(n, k) * p^k * (1 - p)^(n - k)
+
+
+where:
+- `k` = number of successes desired
+- `n` = number of trials
+- `p` = probability of success
+
+#### Geometric Random Variables
+
+For a geometric random variable, the probability mass function is:
+
+P[X = n] = p * q^(n - 1)
+
+
+where:
+- `p` = probability of success
+- `q` = 1 - p
+
+The expected value is:
+E[X] = 1 / p
+
+
+The variance is:
+
+
+Var[X] = (1 - p) / p^2
+
