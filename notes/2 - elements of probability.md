@@ -198,7 +198,7 @@ Var[X] = (1 - p) / p^2
 
 - The probability mass function (PMF) is given by:
 
-[poisson](img/3.png)
+![poisson](img/3.png)
 
 where:
 - `l` = average number of events in the interval (rate parameter)
