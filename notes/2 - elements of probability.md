@@ -190,3 +190,19 @@ The variance is:
 
 Var[X] = (1 - p) / p^2
 
+
+
+#### Poisson Random Variables
+
+- Number of events occurring in a fixed interval of time or space.
+
+- The probability mass function (PMF) is given by:
+
+[poisson](img/3.png)
+
+where:
+- `l` = average number of events in the interval (rate parameter)
+- `t` = length of the time interval (not explicitly shown in the formula but implied in λ)
+- `k` = number of events
+
+The Poisson distribution is often used to model the number of occurrences of an event within a fixed interval of time or space when these events happen with a known constant mean rate and independently of the time since the last event.
