@@ -58,3 +58,26 @@ P(A ∩ B) = P(A) * P(B) = (1/2) * (1/6) = 1/12
 
 
 This means the probability that both the coin lands heads and the die shows a 6 is `1/12`.
+
+
+
+
+## Random Variables
+
+When an experiment is performed, we are sometimes primarily concerned about the value of some numerical quantity determined by the result. These quantities of interest that are determined by the results of the experiment are known as **random variables**.
+
+### Cumulative Distribution Function
+
+The cumulative distribution function, or more simply the distribution function, `F` of the random variable `X` is defined for any real number `x` by:
+
+
+F(x) = P{X ≤ x}
+
+
+## Discrete Random Variables
+
+A random variable that can take either a finite or at most a countable number of possible values is said to be **discrete**. For a discrete random variable `X`, we define its **probability mass function** `p(x)` by:
+
+p(x) = P{X = x}
+
+
