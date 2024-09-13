@@ -31,7 +31,7 @@ void inicia_little(little *n){
     n->tempo_anterior = 0.0;
 }
 
-void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulacao){
+void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulacao, const char* nome_arquivo){
     double tempo_decorrido = 0.0;
     double tempo_chegada = gera_tempo(taxa_chegada);
     double tempo_saida = DBL_MAX;
@@ -50,6 +50,15 @@ void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulac
 
     int tempo_coleta = 100;
 
+    FILE *arquivo_csv = fopen(nome_arquivo, "w");
+    if (arquivo_csv == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo %s para escrita.\n", nome_arquivo);
+        return;
+    }
+
+    // Cabeçalho do CSV
+    fprintf(arquivo_csv, "Tempo Decorrido,Taxa Chegada,Taxa Saída,E[N],E[W],Erro de Little,Maior Tamanho de Fila,Ocupacao\n");
+
     while(tempo_decorrido <= tempo_simulacao){
         tempo_decorrido = min(tempo_coleta, min(tempo_chegada, tempo_saida));
 
@@ -66,9 +75,7 @@ void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulac
             double ew_final = (ew_chegadas.soma_areas - ew_saidas.soma_areas) / ew_chegadas.num_eventos;
             double lambda = ew_chegadas.num_eventos / tempo_decorrido;
 
-            printf("E[N]: %lf\n", en_final);
-            printf("E[W]: %lf\n", ew_final);
-            printf("Erro de Little: %lf\n", en_final - lambda * ew_final);
+            fprintf(arquivo_csv, "%lf,%.2f,%.2f,%lf,%lf,%lf\n", tempo_decorrido, taxa_chegada, taxa_saida, en_final, ew_final, en_final - lambda * ew_final);
 
             tempo_coleta += 100;
         }else if(tempo_decorrido == tempo_chegada){
@@ -116,15 +123,15 @@ void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulac
     ew_chegadas.soma_areas += (tempo_decorrido - ew_chegadas.tempo_anterior) * ew_chegadas.num_eventos;
     ew_saidas.soma_areas += (tempo_decorrido - ew_saidas.tempo_anterior) * ew_saidas.num_eventos;
 
-    printf("Maior tamanho de fila alcançado: %lu\n", fila_max);
-    printf("Ocupacao: %lf\n", soma_ocupacao / tempo_decorrido);
     double en_final = en.soma_areas / tempo_decorrido;
     double ew_final = (ew_chegadas.soma_areas - ew_saidas.soma_areas) / ew_chegadas.num_eventos;
     double lambda = ew_chegadas.num_eventos / tempo_decorrido;
 
-    printf("E[N]: %lf\n", en_final);
-    printf("E[W]: %lf\n", ew_final);
-    printf("Erro de Little: %lf\n", en_final - lambda * ew_final);
+    fprintf(arquivo_csv, "%lf,%.2f,%.2f,%lf,%lf,%lf\n", tempo_decorrido, taxa_chegada, taxa_saida, en_final, ew_final, en_final - lambda * ew_final);
+    fprintf(arquivo_csv, "Maior tamanho de fila alcançado: %lu\n", fila_max);
+    fprintf(arquivo_csv, "Ocupacao: %lf\n", soma_ocupacao / tempo_decorrido);
+
+    fclose(arquivo_csv);
 }
 
 int main(){
@@ -134,10 +141,14 @@ int main(){
 
     for(int i = 0; i < 4; i++) {
         double ocupacao = tempos[i];
-        printf("\nCenario de ocupacao: %.2f\n", ocupacao);
         double taxa_saida = 1.0 / (ocupacao / (1.0 - ocupacao)); 
-        double taxa_chegada = 1.0 / ((1.0 - ocupacao) / ocupacao); 
-        simula_cenario(taxa_chegada, taxa_saida, tempo_simulacao);
+        double taxa_chegada = 1.0 / ((1.0 - ocupacao) / ocupacao);
+
+        // Nome do arquivo baseado na taxa de chegada e taxa de saída
+        char nome_arquivo[50];
+        snprintf(nome_arquivo, sizeof(nome_arquivo), "resultado_cenario_%.2f.csv", ocupacao);
+
+        simula_cenario(taxa_chegada, taxa_saida, tempo_simulacao, nome_arquivo);
     }
 
     return 0;
