@@ -33,35 +33,15 @@ void inicia_little(little *n){
     n->tempo_anterior = 0.0;
 }
 
-int main(){
-    srand(time(NULL));
-    double parametro_chegada;
-    printf("Informe o tempo médio entre as chegadas (s): ");
-    scanf("%lF", &parametro_chegada);
-    parametro_chegada = 1.0/parametro_chegada;
-
-    double parametro_saida;
-    printf("Informe o tempo médio de atendimento (s): ");
-    scanf("%lF", &parametro_saida);
-    parametro_saida = 1.0/parametro_saida;
-
-    double tempo_simulacao;
-    printf("Informe o tempo de simulacao (s): ");
-    scanf("%lF", &tempo_simulacao);
-
+void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulacao){
     double tempo_decorrido = 0.0;
-
-    double tempo_chegada = gera_tempo(parametro_chegada);
+    double tempo_chegada = gera_tempo(taxa_chegada);
     double tempo_saida = DBL_MAX;
 
     unsigned long int fila = 0;
     unsigned long int fila_max = 0;
 
     double soma_ocupacao = 0.0;
-
-    /**
-     * variaveis little
-     */
 
     little en;
     little ew_chegadas;
@@ -71,97 +51,73 @@ int main(){
     inicia_little(&ew_saidas);
 
     while(tempo_decorrido <= tempo_simulacao){
-        tempo_decorrido = 
-            min(tempo_chegada, tempo_saida);
+        tempo_decorrido = min(tempo_chegada, tempo_saida);
 
-        //chegada
+        // chegada
         if(tempo_decorrido == tempo_chegada){
-            //sistema esta ocioso?
+            // sistema está ocioso?
             if(!fila){
-                tempo_saida =
-                tempo_decorrido +
-                gera_tempo(parametro_saida);
-
-                soma_ocupacao += tempo_saida - 
-                tempo_decorrido;
+                tempo_saida = tempo_decorrido + gera_tempo(taxa_saida);
+                soma_ocupacao += tempo_saida - tempo_decorrido;
             }
             fila++;
-            fila_max = fila > fila_max?
-                fila:
-                fila_max;
+            fila_max = fila > fila_max ? fila : fila_max;
+            tempo_chegada = tempo_decorrido + gera_tempo(taxa_chegada);
 
-            tempo_chegada =
-            tempo_decorrido +
-            gera_tempo(parametro_chegada);
-
-            /**
-             * little
-             */
-            en.soma_areas += (tempo_decorrido - 
-              en.tempo_anterior) * en.num_eventos;
+            // Little
+            en.soma_areas += (tempo_decorrido - en.tempo_anterior) * en.num_eventos;
             en.num_eventos++;
             en.tempo_anterior = tempo_decorrido;
 
-            ew_chegadas.soma_areas += 
-              (tempo_decorrido - 
-              ew_chegadas.tempo_anterior) * 
-              ew_chegadas.num_eventos;
+            ew_chegadas.soma_areas += (tempo_decorrido - ew_chegadas.tempo_anterior) * ew_chegadas.num_eventos;
             ew_chegadas.num_eventos++;
-            ew_chegadas.tempo_anterior =
-              tempo_decorrido;
-        }else{
+            ew_chegadas.tempo_anterior = tempo_decorrido;
+        } else {
             fila--;
             tempo_saida = DBL_MAX;
-            //tem mais requisicoes na fila?
+            // tem mais requisições na fila?
             if(fila){
-                tempo_saida =
-                tempo_decorrido +
-                gera_tempo(parametro_saida);
-
-                soma_ocupacao += tempo_saida - 
-                tempo_decorrido;
+                tempo_saida = tempo_decorrido + gera_tempo(taxa_saida);
+                soma_ocupacao += tempo_saida - tempo_decorrido;
             }
 
-            /**
-             * little
-             */
-            en.soma_areas += (tempo_decorrido - 
-              en.tempo_anterior) * en.num_eventos;
+            // Little
+            en.soma_areas += (tempo_decorrido - en.tempo_anterior) * en.num_eventos;
             en.num_eventos--;
             en.tempo_anterior = tempo_decorrido;
 
-            ew_saidas.soma_areas += 
-              (tempo_decorrido - 
-              ew_saidas.tempo_anterior) * 
-              ew_saidas.num_eventos;
+            ew_saidas.soma_areas += (tempo_decorrido - ew_saidas.tempo_anterior) * ew_saidas.num_eventos;
             ew_saidas.num_eventos++;
-            ew_saidas.tempo_anterior =
-              tempo_decorrido;
+            ew_saidas.tempo_anterior = tempo_decorrido;
         }
     }
 
-    ew_chegadas.soma_areas += 
-        (tempo_decorrido - 
-        ew_chegadas.tempo_anterior) * 
-        ew_chegadas.num_eventos;
-    ew_saidas.soma_areas += 
-        (tempo_decorrido - 
-        ew_saidas.tempo_anterior) * 
-        ew_saidas.num_eventos;
+    ew_chegadas.soma_areas += (tempo_decorrido - ew_chegadas.tempo_anterior) * ew_chegadas.num_eventos;
+    ew_saidas.soma_areas += (tempo_decorrido - ew_saidas.tempo_anterior) * ew_saidas.num_eventos;
 
-    printf("Maior tamanho de fila alcancado: %d\n",fila_max);
-    printf("Ocupacao: %lF\n",soma_ocupacao/tempo_decorrido);
-    double en_final = en.soma_areas/tempo_decorrido;
-    double ew_final = (ew_chegadas.soma_areas - 
-      ew_saidas.soma_areas) / ew_chegadas.num_eventos;
-    double lambda = ew_chegadas.num_eventos /
-      tempo_decorrido;
-    
-    
-    printf("E[N]: %lF\n",en_final);
-    printf("E[W]: %lF\n",ew_final);
-    printf("Erro de Little: %lF\n",
-      en_final - lambda * ew_final);
+    printf("Maior tamanho de fila alcançado: %lu\n", fila_max);
+    printf("Ocupacao: %lf\n", soma_ocupacao / tempo_decorrido);
+    double en_final = en.soma_areas / tempo_decorrido;
+    double ew_final = (ew_chegadas.soma_areas - ew_saidas.soma_areas) / ew_chegadas.num_eventos;
+    double lambda = ew_chegadas.num_eventos / tempo_decorrido;
+
+    printf("E[N]: %lf\n", en_final);
+    printf("E[W]: %lf\n", ew_final);
+    printf("Erro de Little: %lf\n", en_final - lambda * ew_final);
+}
+
+int main(){
+    srand(time(NULL));
+    double tempos[4] = {0.80, 0.90, 0.95, 0.99}; 
+    double tempo_simulacao = 100000.0; 
+
+    for(int i = 0; i < 4; i++) {
+        double ocupacao = tempos[i];
+        printf("\nCenario de ocupacao: %.2f\n", ocupacao);
+        double taxa_saida = 1.0 / (ocupacao / (1.0 - ocupacao)); 
+        double taxa_chegada = 1.0 / ((1.0 - ocupacao) / ocupacao); 
+        simula_cenario(taxa_chegada, taxa_saida, tempo_simulacao);
+    }
 
     return 0;
 }
