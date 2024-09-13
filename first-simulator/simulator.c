@@ -12,8 +12,6 @@ typedef struct {
 
 double uniforme(){
     double u = rand() / ((double) RAND_MAX + 1);
-    //u == 0 --> ln(u) <-- problema
-    //limitando u entre (0,1]
     u = 1.0 - u;
     return u;
 }
@@ -50,11 +48,30 @@ void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulac
     inicia_little(&ew_chegadas);
     inicia_little(&ew_saidas);
 
-    while(tempo_decorrido <= tempo_simulacao){
-        tempo_decorrido = min(tempo_chegada, tempo_saida);
+    int tempo_coleta = 100;
 
-        // chegada
-        if(tempo_decorrido == tempo_chegada){
+    while(tempo_decorrido <= tempo_simulacao){
+        tempo_decorrido = min(tempo_coleta, min(tempo_chegada, tempo_saida));
+
+        if(tempo_decorrido == tempo_coleta) {
+            en.soma_areas += (tempo_decorrido - en.tempo_anterior) * en.num_eventos;
+            ew_chegadas.soma_areas += (tempo_decorrido - ew_chegadas.tempo_anterior) * ew_chegadas.num_eventos;
+            ew_saidas.soma_areas += (tempo_decorrido - ew_saidas.tempo_anterior) * ew_saidas.num_eventos;
+
+            en.tempo_anterior = tempo_decorrido;
+            ew_chegadas.tempo_anterior = tempo_decorrido;
+            ew_saidas.tempo_anterior = tempo_decorrido;
+
+            double en_final = en.soma_areas / tempo_decorrido;
+            double ew_final = (ew_chegadas.soma_areas - ew_saidas.soma_areas) / ew_chegadas.num_eventos;
+            double lambda = ew_chegadas.num_eventos / tempo_decorrido;
+
+            printf("E[N]: %lf\n", en_final);
+            printf("E[W]: %lf\n", ew_final);
+            printf("Erro de Little: %lf\n", en_final - lambda * ew_final);
+
+            tempo_coleta += 100;
+        }else if(tempo_decorrido == tempo_chegada){
             // sistema está ocioso?
             if(!fila){
                 tempo_saida = tempo_decorrido + gera_tempo(taxa_saida);
@@ -72,6 +89,10 @@ void simula_cenario(double taxa_chegada, double taxa_saida, double tempo_simulac
             ew_chegadas.soma_areas += (tempo_decorrido - ew_chegadas.tempo_anterior) * ew_chegadas.num_eventos;
             ew_chegadas.num_eventos++;
             ew_chegadas.tempo_anterior = tempo_decorrido;
+
+            ew_saidas.soma_areas += (tempo_decorrido - ew_saidas.tempo_anterior) * ew_saidas.num_eventos;
+            ew_saidas.num_eventos++;
+            ew_saidas.tempo_anterior = tempo_decorrido;
         } else {
             fila--;
             tempo_saida = DBL_MAX;
