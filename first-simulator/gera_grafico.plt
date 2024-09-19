@@ -8,7 +8,7 @@ set output 'grafico_ocupacao.svg'
 set title "Ocupação pelo Tempo Decorrido"
 set xlabel "Tempo Decorrido (s)"
 set ylabel "Ocupação"
-set yrange [0.65:1]  
+set yrange [0:*]  
 set ytics ("0.85" 0.85, "0.90" 0.90, "0.95" 0.95, "0.99" 0.99)
 set xtics 10000  # Deixa o eixo X mais espaçado, ajustando os intervalos
 plot "resultado_cenario_0.85_ocupacao.txt" using 1:2 with lines title "Ocupação 0.85", \
@@ -45,7 +45,7 @@ plot "resultado_cenario_0.85_ew.txt" using 1:2 with lines title "E[W] 0.85", \
 set output 'grafico_lambda.svg'
 set title "Lambda pelo Tempo Decorrido"
 set ylabel "Lambda"
-set yrange [0:0.3]  # Ajusta o eixo Y entre 0 e 1 para Lambda
+set yrange [0:*]  # Ajusta o eixo Y entre 0 e 1 para Lambda
 set ytics 0.1  # Define intervalos de 0.1 para o eixo Y
 plot "resultado_cenario_0.85_lambda.txt" using 1:2 with lines title "Lambda 0.85", \
      "resultado_cenario_0.90_lambda.txt" using 1:2 with lines title "Lambda 0.90", \
