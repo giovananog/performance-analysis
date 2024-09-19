@@ -36,7 +36,7 @@ void atualiza_little(little *n, double tempo_atual) {
     n->tempo_anterior = tempo_atual;
 }
 
-void simula_cenario(double taxa_media_chegada, double capacidade, double tempo_simulacao, const char* nome_arquivo){
+void simula_cenario(double taxa_media_chegada, double capacidade, double tempo_simulacao, const char* arquivo_ocupacao,  const char* arquivo_ew,  const char* arquivo_en, const char* arquivo_lambda, const char* arquivo_little){
     double tempo_decorrido = 0.0;
     double tempo_chegada = gera_tempo(taxa_media_chegada);
     double tempo_saida = DBL_MAX;
@@ -55,14 +55,42 @@ void simula_cenario(double taxa_media_chegada, double capacidade, double tempo_s
 
     int tempo_coleta = 100;
 
-    FILE *arquivo_csv = fopen(nome_arquivo, "w");
-    if (arquivo_csv == NULL) {
-        fprintf(stderr, "Não foi possível abrir o arquivo %s para escrita.\n", nome_arquivo);
+    FILE *arquivo_txt= fopen(arquivo_ocupacao, "w");
+    if (arquivo_txt == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo %s para escrita.\n", arquivo_ocupacao);
+        return;
+    }
+
+    FILE *arquivo_txt2 = fopen(arquivo_ew, "w");
+    if (arquivo_txt2 == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo %s para escrita.\n", arquivo_ew);
+        return;
+    }
+
+    FILE *arquivo_txt3 = fopen(arquivo_en, "w");
+    if (arquivo_txt3 == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo %s para escrita.\n", arquivo_en);
+        return;
+    }
+
+    FILE *arquivo_txt4 = fopen(arquivo_lambda, "w");
+    if (arquivo_txt4 == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo %s para escrita.\n", arquivo_lambda);
+        return;
+    }
+
+    FILE *arquivo_txt5 = fopen(arquivo_little, "w");
+    if (arquivo_txt5 == NULL) {
+        fprintf(stderr, "Não foi possível abrir o arquivo %s para escrita.\n", arquivo_little);
         return;
     }
 
     // Cabeçalho do CSV
-    fprintf(arquivo_csv, "Tempo Decorrido,Taxa Media Chegada,Taxa Saída,E[N],E[W],Lambda, Erro de Little,Ocupacao\n");
+    fprintf(arquivo_txt, "Tempo Decorrido,Ocupacao\n");
+    fprintf(arquivo_txt2, "Tempo Decorrido,E[W]\n");
+    fprintf(arquivo_txt3, "Tempo Decorrido,E[N]\n");
+    fprintf(arquivo_txt4, "Tempo Decorrido,Lambda\n");
+    fprintf(arquivo_txt5, "Tempo Decorrido,Little\n");
 
     while(tempo_decorrido <= tempo_simulacao){
         tempo_decorrido = min(tempo_coleta, min(tempo_chegada, tempo_saida));
@@ -79,7 +107,11 @@ void simula_cenario(double taxa_media_chegada, double capacidade, double tempo_s
 
             double ocupacao = soma_ocupacao / tempo_decorrido;
 
-            fprintf(arquivo_csv, "%lf,%.2f,%.2f,%lf,%lf,%lf, %lf,%lf\n", tempo_decorrido, taxa_media_chegada, capacidade, en_final, ew_final, lambda, erro_little, ocupacao);
+            fprintf(arquivo_txt, "%lf,%.2f\n", tempo_decorrido, ocupacao);
+            fprintf(arquivo_txt2, "%lf,%.2f\n", tempo_decorrido, ew_final);
+            fprintf(arquivo_txt3, "%lf,%.2f\n", tempo_decorrido, en_final);
+            fprintf(arquivo_txt4, "%lf,%.2f\n", tempo_decorrido, lambda);
+            fprintf(arquivo_txt5, "%lf,%.2f\n", tempo_decorrido, erro_little);
 
             tempo_coleta += 100;
         } else if(tempo_decorrido == tempo_chegada) {
@@ -121,14 +153,26 @@ void simula_cenario(double taxa_media_chegada, double capacidade, double tempo_s
     double ew_final = (ew_chegadas.soma_areas - ew_saidas.soma_areas) / ew_chegadas.num_eventos;
     double lambda = ew_chegadas.num_eventos / tempo_decorrido;
     double erro_little = en_final - lambda * ew_final;
+    
+    // ocupacao
+    double ocupacao = soma_ocupacao / tempo_decorrido;
 
-    fprintf(arquivo_csv, "%lf,%.2f,%.2f,%lf,%lf,%lf,%lu,%lf\n", tempo_decorrido, taxa_media_chegada, capacidade, en_final, ew_final, erro_little, fila_max, soma_ocupacao / tempo_decorrido);
 
-    fclose(arquivo_csv);
+    fprintf(arquivo_txt, "%lf,%.2f\n", tempo_decorrido, ocupacao);
+    fprintf(arquivo_txt2, "%lf,%.2f\n", tempo_decorrido, ew_final);
+    fprintf(arquivo_txt3, "%lf,%.2f\n", tempo_decorrido, en_final);
+    fprintf(arquivo_txt4, "%lf,%.2f\n", tempo_decorrido, lambda);
+    fprintf(arquivo_txt5, "%lf,%.2f\n", tempo_decorrido, erro_little);
+
+    fclose(arquivo_txt);
+    fclose(arquivo_txt2);
+    fclose(arquivo_txt3);
+    fclose(arquivo_txt4);
+    fclose(arquivo_txt5);
 }
 
 int main(){
-    srand(time(NULL));
+    srand(5);
     double tempos[4] = {0.85, 0.90, 0.95, 0.99}; 
     double tempo_simulacao = 100000.0; 
 
@@ -137,10 +181,22 @@ int main(){
         double taxa_media_chegada = 5.0; 
         double capacidade = taxa_media_chegada / ocupacao; 
 
-        char nome_arquivo[50];
-        snprintf(nome_arquivo, sizeof(nome_arquivo), "resultado_cenario_%.2f.csv", ocupacao);
+        char arquivo_ocupacao[50];
+        snprintf(arquivo_ocupacao, sizeof(arquivo_ocupacao), "resultado_cenario_%.2f_ocupacao.csv", ocupacao);
 
-        simula_cenario(taxa_media_chegada, capacidade, tempo_simulacao, nome_arquivo);
+        char arquivo_ew[50];
+        snprintf(arquivo_ew, sizeof(arquivo_ew), "resultado_cenario_%.2f_ew.csv", ocupacao);
+
+        char arquivo_en[50];
+        snprintf(arquivo_en, sizeof(arquivo_en), "resultado_cenario_%.2f_en.csv", ocupacao);
+
+        char arquivo_lambda[50];
+        snprintf(arquivo_lambda, sizeof(arquivo_lambda), "resultado_cenario_%.2f_lambda.csv", ocupacao);
+
+        char arquivo_little[50];
+        snprintf(arquivo_little, sizeof(arquivo_little), "resultado_cenario_%.2f_little.csv", ocupacao);
+
+        simula_cenario(taxa_media_chegada, capacidade, tempo_simulacao, arquivo_ocupacao, arquivo_ew, arquivo_en, arquivo_lambda, arquivo_little);
     }
 
     return 0;
