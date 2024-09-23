@@ -57,8 +57,8 @@ plot "resultado_cenario_0.85_lambda.txt" using 1:2 with lines title "Lambda 0.85
 set output 'grafico_erro_little.svg'
 set title "Erro de Little pelo Tempo Decorrido"
 set ylabel "Erro de Little"
-set yrange [-0.2:0.2]  # Ajusta o eixo Y para variação simétrica (-0.5 a 0.5)
-set ytics 0.1  # Define intervalos de 0.1 no eixo Y
+set yrange [-1e-8:1e-8]  # Ajusta o eixo Y para valores pequenos
+set ytics 1e-9  # Define intervalos de 1e-9 no eixo Y
 plot "resultado_cenario_0.85_little.txt" using 1:2 with lines title "Erro 0.85", \
      "resultado_cenario_0.90_little.txt" using 1:2 with lines title "Erro 0.90", \
      "resultado_cenario_0.95_little.txt" using 1:2 with lines title "Erro 0.95", \
