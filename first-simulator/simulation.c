@@ -111,7 +111,7 @@ void simula_cenario(double taxa_media_chegada, double capacidade, double tempo_s
             fprintf(arquivo_txt2, "%lf,%.2f\n", tempo_decorrido, ew_final);
             fprintf(arquivo_txt3, "%lf,%.2f\n", tempo_decorrido, en_final);
             fprintf(arquivo_txt4, "%lf,%.2f\n", tempo_decorrido, lambda);
-            fprintf(arquivo_txt5, "%lf,%.2f\n", tempo_decorrido, erro_little);
+            fprintf(arquivo_txt5, "%lf,%.20f\n", tempo_decorrido, erro_little);
 
             tempo_coleta += 100;
         } else if(tempo_decorrido == tempo_chegada) {
@@ -182,19 +182,19 @@ int main(){
         double capacidade = taxa_media_chegada / ocupacao; 
 
         char arquivo_ocupacao[50];
-        snprintf(arquivo_ocupacao, sizeof(arquivo_ocupacao), "resultado_cenario_%.2f_ocupacao.csv", ocupacao);
+        snprintf(arquivo_ocupacao, sizeof(arquivo_ocupacao), "resultado_cenario_%.2f_ocupacao.txt", ocupacao);
 
         char arquivo_ew[50];
-        snprintf(arquivo_ew, sizeof(arquivo_ew), "resultado_cenario_%.2f_ew.csv", ocupacao);
+        snprintf(arquivo_ew, sizeof(arquivo_ew), "resultado_cenario_%.2f_ew.txt", ocupacao);
 
         char arquivo_en[50];
-        snprintf(arquivo_en, sizeof(arquivo_en), "resultado_cenario_%.2f_en.csv", ocupacao);
+        snprintf(arquivo_en, sizeof(arquivo_en), "resultado_cenario_%.2f_en.txt", ocupacao);
 
         char arquivo_lambda[50];
-        snprintf(arquivo_lambda, sizeof(arquivo_lambda), "resultado_cenario_%.2f_lambda.csv", ocupacao);
+        snprintf(arquivo_lambda, sizeof(arquivo_lambda), "resultado_cenario_%.2f_lambda.txt", ocupacao);
 
         char arquivo_little[50];
-        snprintf(arquivo_little, sizeof(arquivo_little), "resultado_cenario_%.2f_little.csv", ocupacao);
+        snprintf(arquivo_little, sizeof(arquivo_little), "resultado_cenario_%.2f_little.txt", ocupacao);
 
         simula_cenario(taxa_media_chegada, capacidade, tempo_simulacao, arquivo_ocupacao, arquivo_ew, arquivo_en, arquivo_lambda, arquivo_little);
     }
